@@ -194,6 +194,8 @@ function SympleChat($scope) {
         $scope.directUser = user ? user : ''
         $('#post-message .direct-user').text('@' + $scope.directUser)
         $('#post-message .message-text')[0].focus()
+
+        $scope.currentMessages.splice(0,$scope.currentMessages.length);
     }
 
     $scope.sendMessage = function() {
@@ -289,4 +291,12 @@ function SympleChat($scope) {
             return 'list-group-item-warning';
         return '';
     }
+
+    function remove(arr, item) {
+      for(var i = arr.length; i--;) {
+          if(arr[i] === item) {
+              arr.splice(i, 1);
+          }
+      }
+  }
 }

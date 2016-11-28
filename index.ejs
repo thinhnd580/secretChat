@@ -96,7 +96,8 @@
                           <li><a href="javascript:void(0)" ng-click="startVideoCall(peer.user)">Video chat</a></li>
                         </ul>
                       </div>
-                      <b>@{{peer.user}}</b>
+                      <!-- <b>@{{peer.user}}</b> -->
+                      <a href="javascript:void(0)" ng-click="setMessageTarget(peer.user)">@{{peer.user}}</a>
                       <!--
                       <h4 class="list-group-item-heading">@{{peer.user}}</h4>
                       <p class="list-group-item-text">...</p>
