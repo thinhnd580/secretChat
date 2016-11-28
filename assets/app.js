@@ -10,18 +10,23 @@ function SympleChat($scope) {
     $scope.directUser;
     $scope.peers = [];
     $scope.messages = [];
-    $scope.currentMessages = ["sfsfsf000","sfsfsf"];
+    $scope.currentMessages = [];
     $scope.testArray = [];
     $scope.messageText = "";
     $scope.errorText = "";
     $scope.isLoading = false;
     $scope.disableLocalAudio = false; // set true to prevent local feedback loop
+    $scope.camera = $('#camera');
 
     $(document).ready(function() {
-
+        
         //
         // Client
         $scope.client = new Symple.Client(CLIENT_OPTIONS);
+        //Init
+        $scope.handle= "It's Me";
+        $scope.login();
+        $scope.camera.modal('hide');
 
         $scope.client.on('announce', function(peer) {
             //console.log('announce:', peer)
@@ -157,9 +162,6 @@ function SympleChat($scope) {
                 user: peer.user,
                 messages: []
             });
-            console.log('+++++++++++++++++++++++++++++++++++');
-            console.log($scope.testArray);
-            console.log($scope.messages);
             $scope.$apply();
         });
 
@@ -212,9 +214,7 @@ function SympleChat($scope) {
                     time: Symple.formatTime(new Date)
                 }
                 $scope.testArray[i].messages.push(tempMessage);
-                // currentMessages.push = $scope.testArray[i].messages;
                 $scope.currentMessages.push(tempMessage);
-                // console.log(currentMessages);
                 break;
             }
             
@@ -226,9 +226,6 @@ function SympleChat($scope) {
             data: $scope.messageText,
             time: Symple.formatTime(new Date)
         });
-        // $scope.currentMessages.push({
-        //     value: "sdsd"
-        // });
         $scope.messageText = "";
     };
 

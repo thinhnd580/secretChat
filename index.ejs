@@ -110,7 +110,7 @@
       <div class="col-md-8">
 
         <div id="video">
-          <div class="panel panel-default">
+          <div id="camera" class="modal fade">
             <div class="panel-heading">
               <h3 class="panel-title">Video</h3>
             </div>
@@ -175,9 +175,9 @@
                     </form>
                   </li>
                   <li class="list-group-item" ng-class="getMessageClass(message)" ng-repeat="message in currentMessages">
-                    <!-- <span class="time">{{message.user}}</span> -->
-                    <span class="user">@{{message}}</span>
-                    <!-- <span class="data">{{message.data}}</span> -->
+                    <span class="time">{{message.time}}</span>
+                    <span class="user">@{{message.user}}: </span>
+                    <span class="data">{{message.data}}</span>
                   </li>
               </ul>
             </div>
