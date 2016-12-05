@@ -1,6 +1,6 @@
 <html ng-app>
 <head>
-<title>Symple WebRTC Live Video Chat Demo</title>
+<title>Ninja Whistle</title>
 <meta name="description" content="This demo showcases how to use Symple to create a WebRTC chat application.">
 
 <script>
@@ -39,25 +39,40 @@
 
 <!-- Application -->
 <link rel="stylesheet" type="text/css" href="app.css">
+<link rel="stylesheet" type="text/css" href="login.css">
 <script type="text/javascript" src="helpers.js"></script>
 <script type="text/javascript" src="app.js"></script>
 </head>
 
 <body ng-controller="SympleChat">
 
-  <div id="loading-overlay" ng-show="isLoading">
-    <div class="icon">
+  <div id="loading-overlay" ng-show="!isLogined">
+    <div id="fullscreen_bg" class="fullscreen_bg">
+       <div class="container" >
+
+      <form class="form-signin" ng-submit="login()">
+        <h1 class="form-signin-heading text-muted">Sign In</h1>
+        <input id="emailInput" type="text" class="form-control" placeholder="Email address" required="" autofocus="">
+        <input id="passwordInput" type="password" class="form-control" placeholder="Password" required="">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">
+          Sign In
+        </button>
+      </form>
+
     </div>
+
+    </div>
+    
   </div>
-
   <div id="container">
-
+    
     <nav id="nav">
-      <h1 id="logo"><a href="http://symple.sourcey.com">Symple WebRTC Video Chat</a></h1>
+      <h1 id="logo"><a href="http://symple.sourcey.com">Symple WsebRTC Video Chat</a></h1>
       <a href="http://sourcey.com/symple-webrtc-video-chat-demo">about</a>
       <a href="//github.com/sourcey/symple-client/tree/master/demo">code</a>
     </nav>
 
+    
     <div class="alert alert-danger" ng-show="errorText" ng-bind="errorText">You have been disconnected from the server</div>
 
     <div class="row">
@@ -81,13 +96,39 @@
 
         <div id="roster">
            <div class="panel panel-default">
+             <div class="panel-heading">
+                <h3 class="panel-title">My Profile</h3>
+              </div>
+              <div class="col-xs-12 col-sm-3">
+                            <img src="http://api.randomuser.me/portraits/women/56.jpg" alt="Debbie Schmidt" class="img-responsive img-circle" />
+                        </div>
+                        <div class="col-xs-12 col-sm-9">
+                            <span class="name" style="font-size: 20px">{{peers[0].user}}</span>
+                            <p>3903 W Alexander Rd</p></span>
+                        </div>
+                        <div class="clearfix">
+                  
+              </div>
+           </div>
+
+           <div class="panel panel-default">
               <div class="panel-heading">
                 <h3 class="panel-title">People</h3>
               </div>
               <ul class="list-group">
                   <li class="list-group-item list-group-item-warning" ng-show="!isLoggedIn()"><small>Please log in...</small></li>
                   <li class="list-group-item" ng-repeat="peer in peers">
-                      <div class="btn-group btn-group-xs pull-right">
+                    <a href="javascript:void(0)" ng-click="setMessageTarget(peer.user)">
+                      <div class="col-xs-12 col-sm-3">
+                            <img src="http://api.randomuser.me/portraits/women/56.jpg" alt="Debbie Schmidt" class="img-responsive img-circle" />
+                        </div>
+                        <div class="col-xs-12 col-sm-9">
+                            <span class="name" style="font-size: 20px">@{{peer.user}}</span>
+                            <p>3903 W Alexander Rd</p></span>
+                        </div>
+                        <div class="clearfix"></div>
+
+                      <!-- <div class="btn-group btn-group-xs pull-right">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                           Action <span class="caret"></span>
                         </button>
@@ -95,9 +136,9 @@
                           <li><a href="javascript:void(0)" ng-click="setMessageTarget(peer.user)">Direct message</a></li>
                           <li><a href="javascript:void(0)" ng-click="startVideoCall(peer.user)">Video chat</a></li>
                         </ul>
-                      </div>
+                      </div> -->
                       <!-- <b>@{{peer.user}}</b> -->
-                      <a href="javascript:void(0)" ng-click="setMessageTarget(peer.user)">@{{peer.user}}</a>
+                      </a>
                       <!--
                       <h4 class="list-group-item-heading">@{{peer.user}}</h4>
                       <p class="list-group-item-text">...</p>
@@ -109,25 +150,7 @@
       </div>
 
       <div class="col-md-8">
-
-        <div id="video">
-          <div id="camera" class="modal fade">
-            <div class="panel-heading">
-              <h3 class="panel-title">Video</h3>
-            </div>
-            <div class="panel-body">
-              <div class="local-video-wrap">
-                <div class="local-video">
-                </div>
-                <button id="start-local-video" class="btn btn-primary" ng-click="startLocalVideo()" ng-show="remoteVideoPeer && !localVideoPlaying">Start video</button>
-              </div>
-              <div class="remote-video-wrap">
-                <div class="remote-video">
-                </div>
-              </div>
-          </div>
-
-          <div class="modal fade" id="incoming-call-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal fade" id="incoming-call-modal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-sm">
               <div class="modal-content">
                 <div class="modal-header">
@@ -147,6 +170,27 @@
               </div>
             </div>
           </div>
+        <div id="video">
+          <div id="camera" ng-hide="hideCamera">
+            <div class="panel-heading">
+              <h3 class="panel-title">Video</h3>
+            </div>
+            <div class="panel-body">
+              <div class="local-video-wrap">
+                <div class="local-video">
+                </div>
+                <button id="start-local-video" class="btn btn-primary" ng-click="startLocalVideo()" ng-show="remoteVideoPeer && !localVideoPlaying">Start video</button>
+              </div>
+              <div class="remote-video-wrap">
+                <div class="remote-video">
+                </div>
+              </div>
+              <div style="height: 40px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
+                <button class="btn btn-danger reject" ng-click="endCallVideo()"> End </button>
+              </div>
+          </div>
+
+          
         </div>
 
         <div id="messages">
@@ -155,6 +199,19 @@
                 <h3 class="panel-title">Conversation</h3>
               </div>
               <ul class="list-group">
+                <div style="height: 350px;">
+                <ul id="messagesList" style="height:350px;list-style-type:none;white-space:nowrap;overflow-x:auto;">
+                  <li class="list-group-item" ng-class="getMessageClass(message)" ng-repeat="message in currentMessages">
+                    <span class="time">{{message.time}}</span>
+                    <span class="user">@{{message.user}}: </span>
+                    <span class="data">{{message.data}}</span>
+                  </li>
+
+                </ul>
+                    
+
+                </div>
+                  
                   <li class="list-group-item">
                     <form id="post-message" ng-submit="sendMessage()">
                       <div class="input-group">
@@ -175,11 +232,7 @@
                       </div>
                     </form>
                   </li>
-                  <li class="list-group-item" ng-class="getMessageClass(message)" ng-repeat="message in currentMessages">
-                    <span class="time">{{message.time}}</span>
-                    <span class="user">@{{message.user}}: </span>
-                    <span class="data">{{message.data}}</span>
-                  </li>
+                  
               </ul>
             </div>
         </div>
