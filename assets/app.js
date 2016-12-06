@@ -1,6 +1,6 @@
 //
 // AngilarJS controller
-
+Notification.requestPermission();
 function SympleChat($scope) {
     $scope.email = $('#emailInput');
     $scope.password = $('#passwordInput');
@@ -11,33 +11,38 @@ function SympleChat($scope) {
     $scope.handle;
     $scope.directUser;
     $scope.peers = [];
+    $scope.currentPeer;
     $scope.messages = [];
     $scope.currentMessages = [];
     $scope.testArray = [];
     $scope.messageText = "";
     $scope.errorText = "";
-    $scope.isLogined= true;
+    $scope.isLogined= false;
     $scope.disableLocalAudio = false; // set true to prevent local feedback loop
     $scope.camera = $('#ss');
     $scope.cameraVideo = $('#camera');
     $scope.cameraHeight = { 'min-height': 0.0 };
     $scope.hideCamera = true;
     $scope.loginView = $('loginView');
-    currentUserIndex = -1
+    $scope.fuck = 0;
+    $scope.currentUserIndex = -1
+    $scope.currentPeerAvatar;
+    $scope.email;
+    $scope.showProfile = true;
+    $scope.account = {"thjnh195@gmail.com": "Đức Thịnh",
+                        "sonle@gmail.com": "Anh Sơn",
+                        "concun@gmail.com": "Con Cún"};
+    $scope.avatars = {"Đức Thịnh": "resource/bear1.png",
+                        "Anh Sơn": "resource/bear2.png",
+                        "Con Cún": "resource/bear3.png"};
 
     $(document).ready(function() {
         
-        // $scope.loginView.modal('show');
-        //
+
+
         // Client
         $scope.client = new Symple.Client(CLIENT_OPTIONS);
         //Init
-        $scope.handle= Math.random().toString(36).substr(2, 5);
-        // showCamera(false);
-        // $scope.camera.modal('show');
-        $scope.login();
-
-
         $scope.client.on('announce', function(peer) {
             //console.log('announce:', peer)
 
@@ -52,7 +57,6 @@ function SympleChat($scope) {
 
         $scope.client.on('message', function(m) {
             console.log('message:', m)
-
             tempMessage = {
                     user: m.from.user,
                     data: m.data,
@@ -63,40 +67,20 @@ function SympleChat($scope) {
             for (var i = 0; i < $scope.testArray.length; i++) {
                 if ($scope.testArray[i].user == m.from.user) {
                     $scope.testArray[i].messages.push(tempMessage);
+                    $scope.testArray[i].pending = 1;
+
+                    if ($scope.testArray[i].user == $scope.directUser) {
+                        $scope.currentMessages.push(tempMessage);
+                        $scope.testArray[i].pending = 0;
+                    } else {
+                        $scope.testArray[i].pending = 1;
+                        $scope.notifyMe(m.data);
+                    }
+
                     break;
                 }
             }
-            if (m.from.user == $scope.directUser) {
-                $scope.currentMessages.push(tempMessage);
-            }   
             $scope.$apply();
-
-            // Normal Message
-            // if (!m.direct || m.direct == $scope.handle) {
-            //     // $scope.messages['m.from.user'].push
-            //     // $scope.messages.push({
-            //     //     user: m.from.user,
-            //     //     data: m.data,
-            //     //     to: m.to,
-            //     //     direct: m.direct,
-            //     //     time: Symple.formatTime(new Date)
-            //     // });
-
-            //     tempMessage = {
-            //         user: m.from.user,
-            //         data: m.data,
-            //         to: m.to,
-            //         direct: m.direct,
-            //         time: Symple.formatTime(new Date)
-            //     };
-            //     $scope.testArray[currentUserIndex].messages.push(tempMessage);
-            //     $scope.currentMessages.push(tempMessage);
-
-            //     $scope.$apply();
-            // }
-            // else {
-            //   console.log('dropping message:', m, m.direct)
-            // }
         });
 
         $scope.client.on('command', function(c) {
@@ -106,7 +90,7 @@ function SympleChat($scope) {
 
                 if (!c.status) {
                     // Show a dialog to the user asking if they want to accept the call
-                    // $scope.hideCamera = false;
+                    $scope.notifyMe("Incomming Call")
                     var e = $('#incoming-call-modal')
                     e.find('.caller').text('@' + c.from.user)
                     e.find('.accept').unbind('click').click(function() {
@@ -201,8 +185,10 @@ function SympleChat($scope) {
             console.log('add peer:', peer)
             $scope.peers.push(peer);
             var str = peer.user;
+            var avatar = $scope.avatars[peer.user];
             $scope.testArray.push({
                 user: peer.user,
+                avatar: avatar,
                 messages: []
             });
             $scope.$apply();
@@ -228,19 +214,40 @@ function SympleChat($scope) {
         }
     });
 
-
+    
     //
     // Messaging
+    $scope.notifyMe = function(message) {
 
+        if (!Notification) {
+            alert('Desktop notifications not available in your browser. Try Chromium.'); 
+            return;
+        }
+
+        if (Notification.permission !== "granted")
+            Notification.requestPermission();
+        else {
+            var notification = new Notification('Notification title', {
+              icon: 'resource/iconNinjaBear.png',
+              body: message,
+        });
+
+        notification.onclick = function () {
+            window.open("http://stackoverflow.com/a/13328397/1269037");      
+        };
+            
+        }
+    };
     $scope.setMessageTarget = function(user) {
         console.log('setMessageTarget', user)
-        
+        $scope.showProfile = false;
         $('#post-message .direct-user').text('@' + user)
         $('#post-message .message-text')[0].focus()
         if (user != $scope.directUser) {
             $scope.currentMessages.splice(0,$scope.currentMessages.length);
             for (var i = 0; i < $scope.testArray.length; i++) {
                 console.log($scope.testArray);
+                $scope.testArray[i].pending = 0;
                 if ( $scope.testArray[i].user == user) {
                     console.log("hehfehfhehf");
                     for (var j=0; j< $scope.testArray[i].messages.length;j++) {
@@ -249,6 +256,9 @@ function SympleChat($scope) {
                         $scope.currentMessages.push($scope.testArray[i].messages[j]);
                     }
                     currentUserIndex = i;
+                    $scope.currentPeer = $scope.peers[i];
+                    $scope.currentPeerAvatar = $scope.testArray[i].avatar;
+
                     break;
                 }
             }
@@ -280,13 +290,13 @@ function SympleChat($scope) {
             }
             
         }
-        $scope.messages.push({
-            to: $scope.directUser,
-            direct: $scope.directUser,
-            user: $scope.handle,
-            data: $scope.messageText,
-            time: Symple.formatTime(new Date)
-        });
+        // $scope.messages.push({
+        //     to: $scope.directUser,
+        //     direct: $scope.directUser,
+        //     user: $scope.handle,
+        //     data: $scope.messageText,
+        //     time: Symple.formatTime(new Date)
+        // });
         $scope.messageText = "";
         var box = $('#messagesList');
         box.scrollTop = box.scrollHeight;
@@ -294,9 +304,12 @@ function SympleChat($scope) {
 
     // Login
     $scope.login = function() {
-        console.log('FUCKCKCKCKCKCKCKCKCKCK');
+
+        console.log($scope.account[$scope.email])
+        $scope.handle = $scope.account[$scope.email]
+        console.log($scope.handle)
         if (!$scope.handle || $scope.handle.length < 3) {
-            alert('Please enter 3 or more alphanumeric characters.');
+            alert('Check email and password.');
             return;
         }
 
@@ -353,11 +366,17 @@ function SympleChat($scope) {
         return $scope.handle != null && $scope.client.online();
     }
 
+    
     $scope.getMessageClass = function(m) {
-        if (m.direct)
-            return 'list-group-item-warning';
-        return '';
+        // if (m.direct)
+        //     return 'list-group-item-warning';
+        // return '';
+        if(m.user == $scope.handle) {
+            return 'row message-bubble'
+        }
+        return 'row message-bubble-2'
     }
+
 
     function remove(arr, item) {
       for(var i = arr.length; i--;) {
@@ -374,4 +393,5 @@ function SympleChat($scope) {
             angular.element(document.querySelector('#camera'))[0].style.height = "0px";
         }
     }
+
 }

@@ -1,0 +1,42 @@
+.message-bubble 
+{
+    margin-right: 100px;
+    background-color: #F5F5F5 !important; color: white !important;
+    padding: 10px 10px 10px 10px;
+}
+
+.message-bubble span
+{
+    color:red;
+}
+
+.message-bubble-2
+{
+    margin-left: 100px;
+    background-color: #F5F5F5 !important; color: white !important;
+    padding: 10px 10px 10px 10px;
+}
+
+.message-bubble-2 span
+{
+    color:blue;
+}
+
+
+.message-bubble:nth-child(even) { background-color: #F5F5F5; }
+
+.message-bubble > *
+{
+    padding-left: 10px;    
+}
+
+.message-bubble-2:nth-child(even) { background-color: #F5F5F5; }
+
+.message-bubble-2 > *
+{
+    padding-right: 10px;    
+}
+
+/*.panel-body { padding: 0px; }*/
+
+/*.panel-heading { background-color: #3d6da7 !important; color: white !important; }*/

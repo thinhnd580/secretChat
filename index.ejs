@@ -40,11 +40,29 @@
 <!-- Application -->
 <link rel="stylesheet" type="text/css" href="app.css">
 <link rel="stylesheet" type="text/css" href="login.css">
+<link rel="stylesheet" type="text/css" href="message.css">
 <script type="text/javascript" src="helpers.js"></script>
 <script type="text/javascript" src="app.js"></script>
 </head>
 
 <body ng-controller="SympleChat">
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">NINJA WHISTLE</a>
+      <img src="resource/iconNinjaBear.png" alt="Debbie Schmidt" class="img-responsive img-circle" style="height:50px" />
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="javascript:void(0)">Home</a></li>
+  Notify me!
+</button>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+    </ul>
+  </div>
+</nav>
 
   <div id="loading-overlay" ng-show="!isLogined">
     <div id="fullscreen_bg" class="fullscreen_bg">
@@ -52,8 +70,8 @@
 
       <form class="form-signin" ng-submit="login()">
         <h1 class="form-signin-heading text-muted">Sign In</h1>
-        <input id="emailInput" type="text" class="form-control" placeholder="Email address" required="" autofocus="">
-        <input id="passwordInput" type="password" class="form-control" placeholder="Password" required="">
+        <input id="emailInput" value="ssfsfs" ng-model="email" ng-init="email='thjnh195@gmail.com'" type="text" class="form-control" placeholder="Email address" required="" autofocus="">
+        <input id="passwordInput" type="password" class="form-control" placeholder="Password" required="" value="safasf">
         <button class="btn btn-lg btn-primary btn-block" type="submit">
           Sign In
         </button>
@@ -65,14 +83,7 @@
     
   </div>
   <div id="container">
-    
-    <nav id="nav">
-      <h1 id="logo"><a href="http://symple.sourcey.com">Symple WsebRTC Video Chat</a></h1>
-      <a href="http://sourcey.com/symple-webrtc-video-chat-demo">about</a>
-      <a href="//github.com/sourcey/symple-client/tree/master/demo">code</a>
-    </nav>
 
-    
     <div class="alert alert-danger" ng-show="errorText" ng-bind="errorText">You have been disconnected from the server</div>
 
     <div class="row">
@@ -99,12 +110,12 @@
              <div class="panel-heading">
                 <h3 class="panel-title">My Profile</h3>
               </div>
-              <div class="col-xs-12 col-sm-3">
-                            <img src="http://api.randomuser.me/portraits/women/56.jpg" alt="Debbie Schmidt" class="img-responsive img-circle" />
+              <div class="col-xs-12 col-sm-3" style="height: 80px">
+                            <img src={{testArray[0].avatar}} alt="Debbie Schmidt" class="img-responsive img-circle" style="height: 70px;width: 70px" />
                         </div>
                         <div class="col-xs-12 col-sm-9">
                             <span class="name" style="font-size: 20px">{{peers[0].user}}</span>
-                            <p>3903 W Alexander Rd</p></span>
+                            <p>Online</p></span>
                         </div>
                         <div class="clearfix">
                   
@@ -117,32 +128,23 @@
               </div>
               <ul class="list-group">
                   <li class="list-group-item list-group-item-warning" ng-show="!isLoggedIn()"><small>Please log in...</small></li>
-                  <li class="list-group-item" ng-repeat="peer in peers">
+                  <li class="list-group-item" ng-repeat="peer in peers" ng-init="sectionIndex = $index">
                     <a href="javascript:void(0)" ng-click="setMessageTarget(peer.user)">
                       <div class="col-xs-12 col-sm-3">
-                            <img src="http://api.randomuser.me/portraits/women/56.jpg" alt="Debbie Schmidt" class="img-responsive img-circle" />
+                            <img src={{testArray[sectionIndex].avatar}} class="img-responsive img-circle" />
                         </div>
-                        <div class="col-xs-12 col-sm-9">
+
+                        <div class="col-xs-12 col-sm-9" style="width: 60%">
                             <span class="name" style="font-size: 20px">@{{peer.user}}</span>
                             <p>3903 W Alexander Rd</p></span>
                         </div>
-                        <div class="clearfix"></div>
-
-                      <!-- <div class="btn-group btn-group-xs pull-right">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                          Action <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                          <li><a href="javascript:void(0)" ng-click="setMessageTarget(peer.user)">Direct message</a></li>
-                          <li><a href="javascript:void(0)" ng-click="startVideoCall(peer.user)">Video chat</a></li>
-                        </ul>
-                      </div> -->
-                      <!-- <b>@{{peer.user}}</b> -->
+                        <div class="notification-icon" ng-show="testArray[sectionIndex].pending">
+                            <span class="glyphicon glyphicon-envelope"></span>
+                            <span class="label label-danger">{{sectionIndex}}</span>
+                        </div>
+                        <div class="clearfix"> </div>
                       </a>
-                      <!--
-                      <h4 class="list-group-item-heading">@{{peer.user}}</h4>
-                      <p class="list-group-item-text">...</p>
-                      -->
+                      
                   </li>
               </ul>
             </div>
@@ -192,22 +194,96 @@
 
           
         </div>
+        <div ng-show="showProfile" style="width: 100%;height: 100%;background-color: white">
 
-        <div id="messages">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h3 class="panel-title">Conversation</h3>
+                <div class="row">
+            <br>
+            <br>
+                  <div class="span3 well">
+                    <center>
+                    <img src={{testArray[0].avatar}} name="aboutme" width="140" height="140" class="img-circle">
+                    <!-- <img src={{currentPeerAvatar}} class="img-responsive img-circle" > -->
+
+                     <h3>{{peers[0].user}}</h3>
+                     <em>click my face for more</em>
+                     <p>By the way,<br><a target="_blank" href="http://bootsnipp.com/TXTCLASS/snippets/25zz">there's a fresh 3.1.0 version ready</a></p>
+                  </center>
+                        <div class="modal hide" id="aboutModal">
+                      <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal">✕</button>
+                          <h3>About Joe</h3>
+                      </div>
+                          <div class="modal-body" style="text-align:center;">
+                          <div class="row-fluid">
+                              <div class="span10 offset1">
+                                  <div id="modalTab">
+                                      <div class="tab-content">
+                                          <div class="tab-pane active" id="about">
+                <img src="https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRbezqZpEuwGSvitKy3wrwnth5kysKdRqBW54cAszm_wiutku3R" name="aboutme" width="140" height="140" border="0" class="img-circle"></a>
+                  <h3 class="media-heading">Joe Sixpack <small> USA</small></h3>
+                            <span><strong>Skills: </strong></span>
+                            <span class="label label-warning">HTML5/CSS</span>
+                            <span class="label label-info">Adobe CS 5.5</span>
+                            <span class="label label-info">Microsoft Office</span>
+                            <span class="label label-success">Windows XP, Vista, 7</span>
+                </center>
+                <hr>
+                <center>
+                <p class="text-left"><strong>Bio: </strong><br>
+                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut sem dui, tempor sit amet commodo a, vulputate vel tellus.</p>
+                  <br>
+                  </center>
+                  </div>
               </div>
+            </div>
+            </div>
+            </div>
+            </div>
+            </div>
+            </div>
+            </div>
+            </div>
+
+        </div>
+        <div id="messages" ng-show="!showProfile">
+            <div class="panel panel-default">
+            
+              <div class="panel-heading" ">
+                  <div class="col-xs-12 col-sm-3" style="width: 100px">
+                            <img src={{currentPeerAvatar}} class="img-responsive img-circle" >
+
+                        </div>
+                        <div class="col-xs-12 col-sm-9" style="padding-left: 0px">
+                            <span class="name" style="font-size: 20px">{{currentPeer.user}}</span>
+                            <span><p>Online</p></span>
+                        </div>
+                        <div>
+                          <img ng-show="hideCamera" href="javascript:void(0)" ng-click="startVideoCall(currentPeer.user)" src="http://cliparts.co/cliparts/piq/8Xp/piq8XpbbT.png" alt="Debbie Schmidt" class="img-responsive img-circle" style="height: 50px; width: 50px">
+                        </div>
+                        <div class="clearfix"></div>
+              </div>
+              <!-- <div class="chat_window"><div class="top_menu"><div class="buttons"><div class="button close"></div><div class="button minimize"></div><div class="button maximize"></div></div><div class="title">Chat</div></div><ul class="messages"></ul><div class="bottom_wrapper clearfix"><div class="message_input_wrapper"><input class="message_input" placeholder="Type your message here..." /></div><div class="send_message"><div class="icon"></div><div class="text">Send</div></div></div></div><div class="message_template"><li class="message"><div class="avatar"></div><div class="text_wrapper"><div class="text"></div></div></li></div> -->
+
               <ul class="list-group">
                 <div style="height: 350px;">
-                <ul id="messagesList" style="height:350px;list-style-type:none;white-space:nowrap;overflow-x:auto;">
-                  <li class="list-group-item" ng-class="getMessageClass(message)" ng-repeat="message in currentMessages">
-                    <span class="time">{{message.time}}</span>
-                    <span class="user">@{{message.user}}: </span>
-                    <span class="data">{{message.data}}</span>
+                  <ul id="messagesList" style="height:350px;list-style-type:none;white-space:nowrap;overflow-x:auto;">
+                  
+                  <li ng-repeat="message in currentMessages" >
+                    <div ng-class="getMessageClass(message)">
+                    <p class="text-muted">{{message.user}}</p>
+                      <span>{{message.data}}</span>
+                    </div>
+                    <br>
                   </li>
-
-                </ul>
+                  
+                  <!-- <div class="message_template">
+                    <li class="message"  ng-repeat="message in currentMessages">
+                      <span class="time">{{message.time}}</span>
+                      <span class="user">@{{message.user}}: </span>
+                      <span class="data">{{message.data}}</span>
+                    </li>
+                  </div> -->
+                  </ul>
                     
 
                 </div>
